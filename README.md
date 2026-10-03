@@ -1,76 +1,57 @@
 # Repository Otomatis
 
-GitHub Repository Factory untuk membuat repository baru secara otomatis.
+Repository Factory untuk membuat **repository GitHub baru sekaligus isi awal project dan halaman-halamannya**.
 
-## Tujuan
+## Contoh yang kamu inginkan
 
-Repository ini menjadi fondasi **pembuatan repository otomatis**. Setelah token GitHub tersedia, perintah ini dapat membuat repository baru tanpa harus membuatnya satu per satu melalui halaman GitHub.
+Kalau instruksinya:
 
-## Cara pakai
+```text
+Buat repo agend-data.
+Template web.
+Halaman: Beranda, Tentang, Data, Kontak.
+```
 
-### 1. Siapkan token
+Factory akan membuat:
 
-Buat GitHub Personal Access Token dengan izin yang diperlukan untuk membuat repository, lalu simpan sebagai environment variable:
+- repository `agend-data`
+- `index.html` sebagai Beranda
+- `pages/tentang.html`
+- `pages/data.html`
+- `pages/kontak.html`
+- `assets/style.css`
+- `README.md`
+
+## CLI
 
 ```bash
-GITHUB_TOKEN=...
-GITHUB_OWNER=rizki-habibi
+npm run create -- agend-data "Aplikasi Agend Data" --template web --pages Beranda,Tentang,Data,Kontak
 ```
 
-Jangan commit token ke repository.
+Template yang tersedia: `web`, `node`, `api`.
 
-### 2. Jalankan
+## API
+
+Jalankan:
 
 ```bash
-npm run create -- nama-repository "Deskripsi repository"
+npm start
 ```
 
-Contoh:
+Lalu kirim `POST /api/repositories` dengan JSON:
 
-```bash
-npm run create -- proyek-baru "Repository proyek baru"
+```json
+{
+  "name": "agend-data",
+  "description": "Aplikasi Agend Data",
+  "template": "web",
+  "visibility": "public",
+  "pages": ["Beranda", "Tentang", "Data", "Kontak"]
+}
 ```
 
-Hasilnya akan menampilkan URL repository yang baru dibuat.
+## Integrasi dengan ChatGPT
 
-## Arsitektur
+Factory ini sudah memiliki mesin CLI dan API. Namun membuat kode di GitHub **tidak otomatis menciptakan tool baru di ChatGPT**. Agar saya dapat memanggilnya langsung dari percakapan untuk membuat repository baru, factory API perlu dideploy dan dihubungkan melalui konektor/tool yang dapat melakukan HTTP request.
 
-```
-Input nama repo
-      |
-      v
-Repository Factory
-      |
-      v
-GitHub REST API
-      |
-      v
-Repository baru
-      |
-      v
-URL + informasi repository
-```
-
-## Pengembangan berikutnya
-
-Fondasi ini sengaja dibuat sederhana agar dapat dikembangkan menjadi:
-
-- template repository otomatis
-- pembuatan struktur folder awal
-- pembuatan README otomatis
-- pembuatan GitHub Actions
-- konfigurasi deployment
-- pembuatan branch
-- commit file awal
-- validasi nama repository
-- mode private/public
-- preset Laravel, React, Node.js, Python, Flutter, dan lainnya
-- API/webhook untuk menerima instruksi pembuatan repository
-
-## Keamanan
-
-Gunakan token dengan hak akses seminimal mungkin. Jangan memasukkan token ke source code, README, log, atau commit.
-
-## Catatan untuk integrasi ChatGPT
-
-Repository ini menyediakan mesin pembuatan repository melalui GitHub API. Namun konektor GitHub di ChatGPT tetap mengikuti kemampuan tool yang tersedia; repository ini tidak otomatis menambahkan tool baru ke ChatGPT. Untuk otomasi penuh dari percakapan, diperlukan koneksi/tool yang dapat memanggil factory ini secara aman.
+Jangan pernah memasukkan `GITHUB_TOKEN` ke source code atau commit.
