@@ -1,49 +1,24 @@
-import process from "node:process";
+import { createProject } from "./factory.js";
 
-const token = process.env.GITHUB_TOKEN;
-const owner = process.env.GITHUB_OWNER || "rizki-habibi";
-
-if (!token) {
-  console.error("GITHUB_TOKEN belum diatur.");
-  process.exit(1);
-}
-
-const name = process.argv[2];
-const description = process.argv.slice(3).join(" ") || "";
+const args = process.argv.slice(2);
+const name = args[0];
+const description = args.slice(1).filter(x => !x.startsWith("--")).join(" ");
+const option = (key, fallback) => { const i = args.indexOf(key); return i >= 0 ? args[i + 1] : fallback; };
 
 if (!name) {
-  console.error("Pemakaian: npm run create -- nama-repo [deskripsi]");
+  console.error("Pemakaian: npm run create -- agend-data \"Project Agend Data\" --template web --pages Beranda,Tentang,Data,Kontak");
   process.exit(1);
 }
 
-const response = await fetch("https://api.github.com/user/repos", {
-  method: "POST",
-  headers: {
-    "Accept": "application/vnd.github+json",
-    "Authorization": `Bearer ${token}`,
-    "X-GitHub-Api-Version": "2022-11-28",
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name,
-    description,
-    private: false,
-    auto_init: true
-  })
-});
-
-const data = await response.json();
-
-if (!response.ok) {
-  console.error(JSON.stringify(data, null, 2));
+try {
+  const result = await createProject({
+    name, description,
+    template: option("--template", "web"),
+    visibility: option("--visibility", "public"),
+    pages: option("--pages", "Beranda,Tentang,Kontak").split(",").map(x => x.trim()).filter(Boolean)
+  });
+  console.log(JSON.stringify(result, null, 2));
+} catch (error) {
+  console.error(error.message);
   process.exit(1);
 }
-
-console.log(JSON.stringify({
-  success: true,
-  owner: data.owner?.login,
-  name: data.name,
-  url: data.html_url,
-  clone_url: data.clone_url,
-  default_branch: data.default_branch
-}, null, 2));
