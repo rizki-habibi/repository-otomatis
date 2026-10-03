@@ -1,11 +1,13 @@
 {
   "name": "repository-otomatis",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "GitHub Repository Factory untuk membuat repository secara otomatis melalui GitHub API.",
+  "description": "GitHub Repository Factory untuk membuat repository sekaligus struktur aplikasi dan halaman awal.",
   "type": "module",
   "scripts": {
-    "create": "node src/create-repository.js"
+    "create": "node src/create-repository.js",
+    "factory": "node src/factory.js",
+    "start": "node src/server.js"
   },
   "engines": {
     "node": ">=20"
